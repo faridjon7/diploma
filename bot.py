@@ -5,19 +5,16 @@ from telebot import types
 import config
 
 
-menu = 'Вернуться в главное меню'
 url1 = 'http://fapl.ru'
 r1 = requests.get(url1)
 soup1 = BeautifulSoup(r1.content, 'html.parser')
 apl_table = soup1.find_all('div', class_='block table')[0].text
 apl_last_matches = soup1.find_all('div', class_='block table')[1].text
 
-
 url2 = 'https://www.sports.ru/la-liga/table/'
 r2 = requests.get(url2)
 soup2 = BeautifulSoup(r2.content, 'html.parser')
 laliga_table = soup2.find_all('div', class_='stat mB6')[0].text
-
 
 url3 = 'https://www.sports.ru/la-liga/calendar/'
 r3 = requests.get(url3)
@@ -70,7 +67,11 @@ r12 = requests.get(url12)
 soup12 = BeautifulSoup(r12.content, 'html.parser')
 conference_league = soup12.find_all('div', class_='groups-info')[0].text
 
+menu = 'Вернуться в главное меню'
+
 bot = telebot.TeleBot(config.token)
+
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -112,8 +113,41 @@ def liga_buttons(message):
         bot.send_message(message.chat.id, f'Ближайшие матчи: {conference_league}')
 
 
+    elif message.text == 'АПЛ':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        button1 = types.KeyboardButton('Ближайшие матчи АПЛ')
+        button2 = types.KeyboardButton('Таблица АПЛ')
+        button3 = types.KeyboardButton(menu)
+        markup.add(button1, button2, button3)
+        bot.send_message(message.chat.id, 'АПЛ', reply_markup=markup)
 
+    elif message.text == 'Ближайшие матчи АПЛ':
+        bot.send_message(message.chat.id, f'Ближайшие матчи: {apl_last_matches}')
 
+    elif message.text == 'Таблица АПЛ':
+        bot.send_message(message.chat.id, apl_table)
+
+    elif message.text == 'ЛаЛига':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        button1 = types.KeyboardButton('Ближайшие матчи ЛаЛиги')
+        button2 = types.KeyboardButton('Таблица ЛаЛиги')
+        button3 = types.KeyboardButton(menu)
+        markup.add(button1, button2, button3)
+        bot.send_message(message.chat.id, 'ЛаЛига', reply_markup=markup)
+
+    elif message.text == 'Ближайшие матчи ЛаЛиги':
+        bot.send_message(message.chat.id, f'Ближайшие матчи: {laliga_matches}')
+
+    elif message.text == 'Таблица ЛаЛиги':
+        bot.send_message(message.chat.id, f'Таблица: {laliga_table}')
+
+    elif message.text == 'Серия А':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        button1 = types.KeyboardButton('Ближайшие матчи Серии А')
+        button2 = types.KeyboardButton('Таблица Серии А')
+        button3 = types.KeyboardButton(menu)
+        markup.add(button1, button2, button3)
+        bot.send_message(message.chat.id, 'Серия А', reply_markup=markup)
 
 
 
